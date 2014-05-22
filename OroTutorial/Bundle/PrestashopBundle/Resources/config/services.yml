@@ -1,8 +1,32 @@
 parameters:
-    oro_tutorials.prestashop.provider.prestashop_channel_type.class: OroTutorial\Bundle\PrestashopBundle\Provider\PrestashopChannelType
+    oro_tutorial.prestashop.provider.rest_transport.class:          OroTutorial\Bundle\PrestashopBundle\Provider\RestTransport
+    oro_tutorial.prestashop.provider.prestashop_channel_type.class: OroTutorial\Bundle\PrestashopBundle\Provider\PrestashopChannelType
+    oro_tutorial.prestashop.provider.customer_connector.class:      OroTutorial\Bundle\PrestashopBundle\Provider\CustomerConnector
+    oro_tutorial.prestashop.form.type.rest_transport.type.class:    OroTutorial\Bundle\PrestashopBundle\Form\Type\RestTransportType
 
 services:
-    oro_tutorials.prestashop.provider.prestashop_channel_type:
-        class: %oro_tutorials.prestashop.provider.prestashop_channel_type.class%
+    oro_tutorial.prestashop.provider.prestashop_channel_type:
+        class: %oro_tutorial.prestashop.provider.prestashop_channel_type.class%
         tags:
             - { name: oro_integration.channel, type: presta_shop }
+
+    oro_tutorial.prestashop.provider.rest_transport:
+        class: %oro_tutorial.prestashop.provider.rest_transport.class%
+        tags:
+            - { name: oro_integration.transport, type: rest, channel_type: presta_shop }
+
+    oro_tutorial.prestashop.provider.customer_connector:
+        class: %oro_tutorial.prestashop.provider.customer_connector.class%
+        arguments:
+          - @oro_importexport.context_registry
+          - @oro_integration.logger.strategy
+          - @oro_integration.provider.connector_context_mediator
+        tags:
+            - { name: oro_integration.connector, type: customer, channel_type: presta_shop }
+
+    oro_tutorial.prestashop.form.type.rest_transport.type:
+        class: %oro_tutorial.prestashop.form.type.rest_transport.type.class%
+        arguments:
+          - @oro_tutorial.prestashop.provider.rest_transport
+        tags:
+          - { name: form.type, alias: oro_tutorial_prestashop_form_rest_transport_type }

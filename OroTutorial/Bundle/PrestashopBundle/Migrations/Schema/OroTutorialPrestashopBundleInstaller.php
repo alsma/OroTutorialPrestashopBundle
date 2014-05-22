@@ -7,7 +7,8 @@ use Doctrine\DBAL\Schema\Schema;
 use Oro\Bundle\MigrationBundle\Migration\QueryBag;
 use Oro\Bundle\MigrationBundle\Migration\Installation;
 
-use OroTutorial\Bundle\PrestashopBundle\Migrations\Schema\v1_0\OroTutorialPrestashopBundle;
+use OroTutorial\Bundle\PrestashopBundle\Migrations\Schema\v1_0\OroTutorialPrestashopBundle as v1_0;
+use OroTutorial\Bundle\PrestashopBundle\Migrations\Schema\v1_1\OroTutorialPrestashopBundle as v1_1;
 
 class OroTutorialPrestashopBundleInstaller implements Installation
 {
@@ -16,7 +17,7 @@ class OroTutorialPrestashopBundleInstaller implements Installation
      */
     public function getMigrationVersion()
     {
-        return 'v1_0';
+        return 'v1_1';
     }
 
     /**
@@ -24,6 +25,7 @@ class OroTutorialPrestashopBundleInstaller implements Installation
      */
     public function up(Schema $schema, QueryBag $queries)
     {
-        OroTutorialPrestashopBundle::customerTable($schema);
+        v1_0::customerTable($schema);
+        v1_1::restTransportTable($schema);
     }
 }

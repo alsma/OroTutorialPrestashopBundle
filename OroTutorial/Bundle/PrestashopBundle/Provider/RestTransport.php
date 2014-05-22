@@ -5,6 +5,8 @@ namespace OroTutorial\Bundle\PrestashopBundle\Provider;
 use Oro\Bundle\IntegrationBundle\Entity\Transport;
 use Oro\Bundle\IntegrationBundle\Provider\TransportInterface;
 
+use OroTutorial\Bundle\PrestashopBundle\Form\Type\RestTransportType;
+
 class RestTransport implements TransportInterface
 {
     /**
@@ -36,7 +38,7 @@ class RestTransport implements TransportInterface
      */
     public function getSettingsFormType()
     {
-        return 'oro_tutorials_prestashop_form_rest_transport_type';
+        return RestTransportType::NAME;
     }
 
     /**
