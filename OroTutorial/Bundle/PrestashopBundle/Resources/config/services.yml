@@ -1,0 +1,8 @@
+parameters:
+    oro_tutorials.prestashop.provider.prestashop_channel_type.class: OroTutorial\Bundle\PrestashopBundle\Provider\PrestashopChannelType
+
+services:
+    oro_tutorials.prestashop.provider.prestashop_channel_type:
+        class: %oro_tutorials.prestashop.provider.prestashop_channel_type.class%
+        tags:
+            - { name: oro_integration.channel, type: presta_shop }
