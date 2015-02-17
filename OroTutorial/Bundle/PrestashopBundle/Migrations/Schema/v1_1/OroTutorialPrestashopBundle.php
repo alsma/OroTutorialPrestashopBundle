@@ -24,10 +24,8 @@ class OroTutorialPrestashopBundle implements Migration
      */
     public static function restTransportTable(Schema $schema)
     {
-        /** Generate table oro_integration_transport **/
         $table = $schema->getTable('oro_integration_transport');
         $table->addColumn('prestashop_rest_endpoint', 'string', ['notnull' => false, 'length' => 255]);
         $table->addColumn('prestashop_rest_api_key', 'string', ['notnull' => false, 'length' => 255]);
-        /** End of generate foreign keys for table oro_integration_transport **/
     }
 }

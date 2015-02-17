@@ -1,0 +1,16 @@
+connector:
+    name: oro_importexport
+    jobs:
+        prestashop_customer_import:
+            title: "Customer import from PrestaShop"
+            type:  import
+            steps:
+                import:
+                    title:     import
+                    class:     Oro\Bundle\BatchBundle\Step\ItemStep
+                    services:
+                        reader:    oro_tutorial.prestashop.provider.customer_connector
+                        processor: oro_importexport.processor.import_delegate
+                        writer:    oro_integration.writer.persistent_batch_writer
+                    parameters:
+                        batch_size: 25

@@ -2,10 +2,35 @@
 
 namespace OroTutorial\Bundle\PrestashopBundle\Provider;
 
+use Symfony\Bridge\Doctrine\RegistryInterface;
+
+use Oro\Bundle\ImportExportBundle\Context\ContextRegistry;
+use Oro\Bundle\IntegrationBundle\Entity\Status;
 use Oro\Bundle\IntegrationBundle\Provider\AbstractConnector;
+use Oro\Bundle\IntegrationBundle\Logger\LoggerStrategy;
+use Oro\Bundle\IntegrationBundle\Provider\ConnectorContextMediator;
 
 class CustomerConnector extends AbstractConnector
 {
+    /** @var RegistryInterface */
+    protected $registry;
+
+    /**
+     * @param ContextRegistry          $contextRegistry
+     * @param LoggerStrategy           $logger
+     * @param ConnectorContextMediator $contextMediator
+     * @param RegistryInterface        $registry
+     */
+    public function __construct(
+        ContextRegistry $contextRegistry,
+        LoggerStrategy $logger,
+        ConnectorContextMediator $contextMediator,
+        RegistryInterface $registry)
+    {
+        parent::__construct($contextRegistry, $logger, $contextMediator);
+        $this->registry = $registry;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -27,7 +52,7 @@ class CustomerConnector extends AbstractConnector
      */
     public function getImportJobName()
     {
-        // TODO: Implement getImportJobName() method.
+        return 'prestashop_customer_import';
     }
 
     /**
@@ -43,6 +68,18 @@ class CustomerConnector extends AbstractConnector
      */
     protected function getConnectorSource()
     {
-        // TODO: Implement getConnectorSource() method.
+        return $this->transport->getCustomers($this->getLastSyncDate());
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    protected function getLastSyncDate()
+    {
+        $channel = $this->contextMediator->getChannel($this->getContext());
+        $status  = $this->registry->getRepository('OroIntegrationBundle:Channel')
+            ->getLastStatusForConnector($channel, $this->getType(), Status::STATUS_COMPLETED);
+
+        return $status ? $status->getDate() : null;
     }
 }

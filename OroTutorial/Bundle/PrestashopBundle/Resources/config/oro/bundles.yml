@@ -1,2 +1,2 @@
 bundles:
-    - OroTutorial\Bundle\PrestashopBundle\OroTutorialPrestashopBundle
+    - { name: OroTutorial\Bundle\PrestashopBundle\OroTutorialPrestashopBundle, priority: 99 }

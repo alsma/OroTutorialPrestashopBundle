@@ -1,0 +1,82 @@
+definitions:
+    prestashop_customer_creation:
+        label:   'Create Account and Contact for PrestaShop Customer'
+        enabled: true
+        entity:  OroTutorial\Bundle\PrestashopBundle\Entity\Customer
+        order:   10
+        actions_configuration:
+            - @tree: # set Contact
+                conditions: # if Contact not exists
+                    @empty: $contact
+                actions:
+                    - @assign_value: [$.firstName, $firstName]
+                    - @assign_value: # check and generate N/A first name
+                        conditions:
+                            @empty: $.firstName
+                        parameters: [$.firstName, 'N/A']
+                    - @assign_value: [$.lastName, $lastName]
+                    - @assign_value: # check and generate last name
+                        conditions:
+                            @empty: $.lastName
+                        parameters: [$.lastName, 'N/A']
+                    - @create_entity: # create Contact
+                        class:     OroCRM\Bundle\ContactBundle\Entity\Contact
+                        attribute: $contact
+                        data:
+                            birthday:     $birthday
+                            email:        $email
+                            firstName:    $.firstName
+                            gender:       $gender
+                            lastName:     $.lastName
+                            middleName:   $middleName
+                            namePrefix:   $namePrefix
+                            nameSuffix:   $nameSuffix
+                            owner:        $channel.defaultUserOwner
+                            organization: $channel.organization
+                    - @tree: # add Contact Email
+                        conditions:
+                            @not_empty: $email
+                        actions:
+                            - @create_entity: # create Contact Email
+                                class:     OroCRM\Bundle\ContactBundle\Entity\ContactEmail
+                                attribute: $.contactEmail
+                                data:
+                                    email:   $email
+                                    primary: true
+                            - @call_method: # add Contact Email to Contact
+                                object: $contact
+                                method: addEmail
+                                method_parameters: [$.contactEmail]
+                            - @unset_value: [$.contactEmail]
+            - @tree: # set Account
+                conditions: # if Account not exists
+                    @empty: $account
+                actions:
+                    - @format_string: # generate Account name
+                        attribute: $.accountName
+                        string:    '%firstName% %lastName%'
+                        arguments:
+                            firstName: $firstName
+                            lastName:  $lastName
+                    - @assign_value: # check and generate N/A Account name
+                        conditions:
+                            @and:
+                                - @empty: $firstName
+                                - @empty: $lastName
+                        parameters: [$.accountName, 'N/A']
+                    - @create_entity: # create Account
+                        class:     OroCRM\Bundle\AccountBundle\Entity\Account
+                        attribute: $account
+                        data:
+                            defaultContact: $contact
+                            name:           $.accountName
+                            owner:          $channel.defaultUserOwner
+                            organization:   $channel.organization
+                    - @unset_value: [$.accountName]
+
+triggers:
+    prestashop_customer_creation:
+        -
+            event:    create
+            priority: 10
+            queued:   true

@@ -1,0 +1,63 @@
+parameters:
+    # entities
+    oro_tutorial.prestashop.customer.entity.class:                      OroTutorial\Bundle\PrestashopBundle\Entity\Customer
+
+    # connectors
+    oro_tutorial.prestashop.provider.customer_connector.class:          OroTutorial\Bundle\PrestashopBundle\Provider\CustomerConnector
+
+    # converter
+    oro_tutorial.prestashop.importexport.data_converter.customer.class: OroTutorial\Bundle\PrestashopBundle\ImportExport\Converter\CustomerDataConverter
+
+    #strategy
+    oro_tutorial.prestashop.importexport.strategy.add_or_replace.class: OroTutorial\Bundle\PrestashopBundle\ImportExport\Strategy\ImportStrategy
+
+    # normalizers
+    oro_tutorial.prestashop.importexport.normalizer.customer.class:     OroTutorial\Bundle\PrestashopBundle\ImportExport\Serializer\CustomerNormalizer
+    oro_tutorial.prestashop. importexport.normalizer.datetime.class:    OroTutorial\Bundle\PrestashopBundle\ImportExport\Serializer\DateTimeNormalizer
+
+services:
+    # Connectors
+    oro_tutorial.prestashop.provider.customer_connector:
+        class: %oro_tutorial.prestashop.provider.customer_connector.class%
+        arguments:
+          - @oro_importexport.context_registry
+          - @oro_integration.logger.strategy
+          - @oro_integration.provider.connector_context_mediator
+          - @doctrine
+        tags:
+            - { name: oro_integration.connector, type: customer, channel_type: presta_shop }
+
+    # Data converters
+    oro_tutorial.prestashop.importexport.data_converter.customer:
+        class: %oro_tutorial.prestashop.importexport.data_converter.customer.class%
+
+    # Normalizers
+    oro_tutorial.prestashop.importexport.normalizer.customer:
+        class: %oro_tutorial.prestashop.importexport.normalizer.customer.class%
+        arguments:
+            - @oro_importexport.field.field_helper
+            - @doctrine
+        tags:
+            - { name: oro_importexport.normalizer }
+
+    oro_tutorial.prestashop.importexport.normalizer.datetime:
+        class: %oro_tutorial.prestashop. importexport.normalizer.datetime.class%
+        tags:
+            - { name: oro_importexport.normalizer }
+
+    # Strategy
+    oro_tutorial.prestashop.importexport.strategy.add_or_replace:
+        class: %oro_tutorial.prestashop.importexport.strategy.add_or_replace.class%
+        parent: oro_importexport.strategy.configurable_add_or_replace
+        calls:
+            - [setLogger, [@oro_integration.logger.strategy]]
+
+    # Processors
+    oro_tutorial.prestashop.processor.import_customer:
+        parent: oro_importexport.processor.import_abstract
+        calls:
+             - [setDataConverter, [@oro_tutorial.prestashop.importexport.data_converter.customer]]
+             - [setStrategy, [@oro_tutorial.prestashop.importexport.strategy.add_or_replace]]
+             - [setEntityName, [%oro_tutorial.prestashop.customer.entity.class%]]
+        tags:
+            - { name: oro_importexport.processor, type: import, entity: %oro_tutorial.prestashop.customer.entity.class%, alias: presta_shop}
