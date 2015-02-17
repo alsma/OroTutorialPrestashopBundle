@@ -27,7 +27,7 @@ class OroTutorialPrestashopBundle implements Migration
         /** Generate table ot_prestashop_customer **/
         $table = $schema->createTable('ot_prestashop_customer');
         $table->addColumn('id', 'integer', ['autoincrement' => true]);
-        $table->addColumn('channel_id', 'smallint', ['notnull' => false]);
+        $table->addColumn('channel_id', 'integer', ['notnull' => false]);
         $table->addColumn('remote_id', 'integer', ['unsigned' => true]);
         $table->addColumn('name_prefix', 'string', ['notnull' => false, 'length' => 255]);
         $table->addColumn('first_name', 'string', ['notnull' => false, 'length' => 255]);
